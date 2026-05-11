@@ -28,7 +28,7 @@ import time
 import matplotlib.pyplot as plt 
  
 # import the class that implements the Q-Learning algorithm
-from function import Q_Learning
+from function_edited_by_zelamir import Q_Learning
  
 #env=gym.make('CartPole-v1',render_mode='human')
 env=gym.make('CartPole-v1')
