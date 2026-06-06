@@ -146,8 +146,9 @@ class Q_Learning:
     #    START - function for simulating learning episodes
     ###########################################################################
       
-    def simulateEpisodes(self):
+    def simulateEpisodes(self, q_table_title,reward_arr_title, path):
         import numpy as np
+        import os
         # here we loop through the episodes
 
         ######## Total_Reward added by Zelamir
@@ -214,6 +215,9 @@ class Q_Learning:
             self.sumRewardsCumulative.append(cumulative_reward)
             # print("array: ", self.sumRewardsCumulative)
             print("Cumulative Reward {}".format(cumulative_reward)) 
+        os.makedirs(path, exist_ok=True)
+        np.save(os.path.join(path, reward_arr_title), self.sumRewardsCumulative)
+        np.save(os.path.join(path, q_table_title), self.Qmatrix)
             #############3################################ 
   
          
@@ -291,7 +295,29 @@ class Q_Learning:
         return sumRewardsEpisodes,env2
     ###########################################################################
     #    END - function for simulating random actions many times
-    ###########################################################################                 
+    ########################################################################### 
+    # 
+
+    def simulateLearnedStrategyLoaded(self, env=None, render_delay=0.0):
+        import gymnasium as gym
+        import time
+        if env is None:
+            env = gym.make('CartPole-v1', max_episode_steps = 1000)  # no render for timing runs
+        state, _ = env.reset()
+        obtainedRewards = []
+        for timeIndex in range(1000):
+            idx = self.returnIndexState(state)
+            # print("Qmatrix.shape =", self.Qmatrix.shape)
+            # print("idx sample:", idx)
+            actions = np.where(self.Qmatrix[idx] == np.max(self.Qmatrix[idx]))[0]
+            actionInStateS = np.random.choice(actions)
+            state, reward, terminated, truncated, info = env.step(actionInStateS)
+            obtainedRewards.append(reward)
+            if render_delay > 0:
+                time.sleep(render_delay)
+            if terminated or truncated:
+                break
+        return obtainedRewards, env                
       
                  
             
